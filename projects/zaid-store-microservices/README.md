@@ -35,4 +35,4 @@ Then send the Compose example request to `http://localhost:4102/orders`. For a l
 
 ## Jenkins integration
 
-The companion pipeline in `projects/jenkins-cicd/Jenkinsfile` documents the CI/CD stages. Production image publishing/deployment should be configured with scoped Jenkins credentials and an explicit protected environment.
+The separate [Jenkins pipeline project](https://github.com/zaidahmed72/node-todo-cicd/pull/1) demonstrates webhook-triggered validation, Docker image publishing, and protected deployment stages. Configure scoped Jenkins credentials and a protected environment before enabling publishing or deployment.
