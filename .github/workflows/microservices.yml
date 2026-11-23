@@ -20,7 +20,8 @@ jobs:
         with:
           node-version: 20
       - name: Validate Kubernetes YAML
-        run: ruby -e 'require "yaml"; Dir.glob("k8s/*.yaml").sort.each { |f| YAML.load_file(f); puts "valid YAML: #{f}" }'
+        run: |
+          ruby -e 'require "yaml"; Dir.glob("k8s/*.yaml").sort.each { |f| YAML.load_file(f); puts "valid YAML #{f}" }'
       - run: docker compose config --quiet
       - run: docker compose up -d --build
       - name: Wait for orders API
