@@ -18,6 +18,8 @@ curl -X POST http://localhost:4102/orders -H 'Content-Type: application/json' -d
 
 The returned order is in-memory for demo purposes and is lost when the service restarts. This sample focuses on service boundaries and orchestration; it does not claim durable storage, distributed stock reservation, authentication, or payment processing.
 
+Run the same endpoint check used by the GitHub workflow with `node scripts/smoke.js` while the Compose stack is running.
+
 ## Run on Kubernetes
 
 Build images where the cluster can pull them, or load them into a local cluster first:
