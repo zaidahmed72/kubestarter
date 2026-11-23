@@ -1,40 +1,102 @@
-# Store Microservices on Docker and Kubernetes
+## Kubernetes Kickstarter
 
-A runnable two-service deployment sample. The catalog owns product reads; the orders API validates input, calls catalog over HTTP with a timeout, checks available stock, and returns an order snapshot. Docker Compose wires the services and waits for health. Kubernetes manifests add a replicated catalog, resource bounds, non-root/read-only containers, probes, and stable service discovery. Orders runs as one replica because its demo data is in process memory; configure shared durable storage before scaling it.
+### Kubernetes In One Shot
 
-## Run with Docker Compose
+Learn Kubernetes concepts in a 12 hour tutorial by TrainWithShubham [here](https://youtu.be/W04brGNgxN4?si=KuUs-ajJOE7TfYs-)
 
-Requirements: Docker Desktop with Compose and Node 20 (only needed to call the sample endpoint).
+## Architecture Guides
 
-```sh
-docker compose up --build
-```
+1. [Kubernetes Architecture Guide](./kubernetes_architecture.md)
 
-Catalog is internal to the Compose network. Orders is available at `http://localhost:4102`. Create a sample order:
+## Examples with Interview Questions
 
-```sh
-curl -X POST http://localhost:4102/orders -H 'Content-Type: application/json' -d '{"productId":"p-101","quantity":2}'
-```
+1. [NGINX with Deployment & Service](./examples/nginx)
+2. [MySQL with ConfigMaps, Secrets & Persistent Volumes](./examples/mysql)
 
-The returned order is in-memory for demo purposes and is lost when the service restarts. This sample focuses on service boundaries and orchestration; it does not claim durable storage, distributed stock reservation, authentication, or payment processing.
+## Installation Guides
 
-Run the same endpoint check used by the GitHub workflow with `node scripts/smoke.js` while the Compose stack is running.
+1. [Kubeadm Installation Scripts](./Kubeadm_Installation_Scripts_and_Documentation/)
+2. [Minikube Installation Guide](./minikube_installation.md)
+3. [EKS Installation Guide](./eks_cluster_setup.md)
 
-## Run on Kubernetes
+## Kubernetes Concepts Covered in this Repository:
 
-Build images where the cluster can pull them, or load them into a local cluster first:
+### Core Kubernetes Components & Architecture
+1. [Kubernetes Architecture](./kubernetes_architecture.md) - Control Plane, Worker Nodes, etcd, API Server, Scheduler, Controller Manager
+2. **Pods** - [NGINX Example](./examples/nginx/pod.yml) - Smallest deployable units in Kubernetes
+3. **Services** - [NGINX Example](./examples/nginx/service.yml) - Network abstraction for accessing Pods
+4. **Deployments** - [NGINX Example](./examples/nginx/deployment.yml) - Declarative updates and lifecycle management for Pods
+5. **Namespaces** - Virtual clusters for resource isolation and organization
 
-```sh
-docker build -t zaid-catalog:latest services/catalog
-docker build -t zaid-orders:latest services/orders
-kubectl apply -f k8s/
-kubectl -n zaid-store rollout status deployment/catalog
-kubectl -n zaid-store rollout status deployment/orders
-kubectl -n zaid-store port-forward service/orders 4102:4102
-```
+### Workload Controllers
+6. **DaemonSet** - [Examples](./DaemonSet/) - Ensures pods run on all/selected nodes
 
-Then send the Compose example request to `http://localhost:4102/orders`. For a local kind cluster, run `kind load docker-image zaid-catalog:latest zaid-orders:latest` before applying. For a remote cluster, push versioned images to an authenticated registry and replace the image references. The sample exposes orders through a NodePort for local learning; use an ingress or internal LoadBalancer with TLS and network policies for a real environment.
+### Configuration & Secrets Management
+7. **ConfigMaps** - [MySQL Example](./examples/mysql/configMap.yml) - Non-confidential configuration data
+8. **Secrets** - [MySQL Example](./examples/mysql/secrets.yml) - Sensitive information like passwords
 
-## Jenkins integration
+### Storage & Persistence
+9. **Persistent Volumes (PV)** - [Examples](./PersistentVolumes/) - Cluster-wide storage resources
+10. **Persistent Volume Claims (PVC)** - [Examples](./PersistentVolumes/) - Storage requests by users
+11. **Volume Mounts** - [MySQL Example](./examples/mysql/persistentVols.yml) - Attaching storage to containers
 
-The separate [Jenkins pipeline project](https://github.com/zaidahmed72/node-todo-cicd/pull/1) demonstrates webhook-triggered validation, Docker image publishing, and protected deployment stages. Configure scoped Jenkins credentials and a protected environment before enabling publishing or deployment.
+### Networking & Traffic Management
+12. **Ingress** - [Examples](./Ingress/) - HTTP/HTTPS traffic routing and load balancing
+13. **Ingress Controllers** - [Setup Guide](./Ingress/README.md) - Implementation of Ingress rules
+
+### Auto-scaling & Resource Management
+14. **Horizontal Pod Autoscaler (HPA)** - [Examples](./HPA_VPA/) - Automatic scaling based on CPU/memory
+15. **Vertical Pod Autoscaler (VPA)** - [Examples](./HPA_VPA/) - Automatic resource adjustment
+16. **Resource Requests & Limits** - [HPA Example](./HPA_VPA/apache-deployment.yml) - CPU and memory constraints
+
+### Security & Access Control
+17. **Role-Based Access Control (RBAC)** - [Examples](./RBAC/) - Fine-grained permissions
+18. **Roles & RoleBindings** - [Examples](./RBAC/) - Namespace-scoped permissions
+19. **Service Accounts** - [Examples](./RBAC/) - Identity for pods and processes
+
+### Node Management & Scheduling
+20. **Taints and Tolerations** - [Examples](./Taints-and-Tolerations/) - Node scheduling constraints
+
+### Package Management & Templating
+21. **Helm Charts** - [Examples](./HELM/) - Kubernetes package manager
+22. **Helm Templates** - [Apache Chart](./HELM/apache/) - Parameterized Kubernetes manifests
+23. **Helm Values** - [Apache Chart](./HELM/apache/values.yaml) - Configuration management for charts
+
+### Deployment Strategies
+24. **Rolling Updates** - [Examples](./Deployment_Strategies/Rolling-Update-Deployment/) - Gradual application updates
+25. **Recreate Deployment** - [Examples](./Deployment_Strategies/Recreate-deployment/) - Stop-and-start deployment
+26. **Blue-Green Deployment** - [Examples](./Deployment_Strategies/Blue-green-deployment/) - Zero-downtime deployments
+27. **Canary Deployment** - [Examples](./Deployment_Strategies/Canary-deployment/) - Gradual traffic shifting
+28. **Simple Canary Example** - [Examples](./Deployment_Strategies/Simple-Canary-Example/) - Basic canary deployment pattern
+
+### CI/CD Integration
+29. **CI/CD with Kubernetes** - [Guide](./ci_cd_with_kubernetes.md) - Continuous integration and deployment
+
+### Cluster Setup & Management
+30. **Kubeadm Installation** - [Scripts & Docs](./Kubeadm_Installation_Scripts_and_Documentation/) - Production cluster setup
+31. **Minikube Setup** - [Installation Guide](./minikube_installation.md) - Local development clusters
+32. **KIND Clusters** - [Setup Guide](./kind-cluster/) - Kubernetes in Docker for testing
+33. **EKS Cluster Setup** - [AWS Guide](./eks_cluster_setup.md) - Managed Kubernetes on AWS
+
+### Monitoring & Observability
+34. **Kubernetes Dashboard** - [KIND Setup](./kind-cluster/) - Web-based cluster management
+35. **Metrics Server** - [HPA Setup](./HPA_VPA/README.md) - Resource usage monitoring
+
+### Real-World Applications
+36. **Multi-tier Applications** - [NGINX Example](./examples/nginx/), [MySQL Example](./examples/mysql/)
+37. **Microservices Architecture** - [Practice Projects](./examples/More_K8s_Practice_Ideas.md)
+38. **Database Deployments** - [MySQL with Persistence](./examples/mysql/) - Stateful application patterns
+39. **Web Application Hosting** - [NGINX Deployment](./examples/nginx/) - Complete application stacks
+
+## Practice Projects
+
+1. [Microservices on k8s](https://github.com/LondheShubham153/microservices-k8s)
+2. [Django App Deployment](https://github.com/LondheShubham153/django-todo-cicd)
+3. [Redit Clone with Ingress](https://github.com/LondheShubham153/reddit-clone-k8s-ingress)
+4. [AWS EKS Best Practices](https://github.com/LondheShubham153/aws-eks-devops-best-practices)
+5. [For More Challenges, Check Out These Ideas](./examples/More_K8s_Practice_Ideas.md)
+
+
+## Portfolio project
+
+- [Store microservices on Docker and Kubernetes](./projects/zaid-store-microservices/README.md)
