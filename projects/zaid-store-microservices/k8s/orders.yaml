@@ -4,7 +4,8 @@ metadata:
   name: orders
   namespace: zaid-store
 spec:
-  replicas: 2
+  # This demo stores orders in process memory; keep one replica until durable storage is configured.
+  replicas: 1
   selector: { matchLabels: { app: orders } }
   template:
     metadata: { labels: { app: orders } }

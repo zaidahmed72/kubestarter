@@ -1,6 +1,6 @@
 # Store Microservices on Docker and Kubernetes
 
-A runnable two-service deployment sample. The catalog owns product reads; the orders API validates input, calls catalog over HTTP with a timeout, checks available stock, and returns an order snapshot. Docker Compose wires the services and waits for health. Kubernetes manifests add multiple replicas, resource bounds, non-root/read-only containers, probes, and stable service discovery.
+A runnable two-service deployment sample. The catalog owns product reads; the orders API validates input, calls catalog over HTTP with a timeout, checks available stock, and returns an order snapshot. Docker Compose wires the services and waits for health. Kubernetes manifests add a replicated catalog, resource bounds, non-root/read-only containers, probes, and stable service discovery. Orders runs as one replica because its demo data is in process memory; configure shared durable storage before scaling it.
 
 ## Run with Docker Compose
 
