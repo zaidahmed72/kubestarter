@@ -95,3 +95,8 @@ Learn Kubernetes concepts in a 12 hour tutorial by TrainWithShubham [here](https
 3. [Redit Clone with Ingress](https://github.com/LondheShubham153/reddit-clone-k8s-ingress)
 4. [AWS EKS Best Practices](https://github.com/LondheShubham153/aws-eks-devops-best-practices)
 5. [For More Challenges, Check Out These Ideas](./examples/More_K8s_Practice_Ideas.md)
+
+
+## Portfolio Project: Store Microservices
+
+A runnable catalog and orders service deployment with Docker Compose and Kubernetes manifests: [Zaid Store microservices](./projects/zaid-store-microservices/README.md).
