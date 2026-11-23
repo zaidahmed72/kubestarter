@@ -1,0 +1,37 @@
+name: Microservices deployment
+
+on:
+  pull_request:
+    paths:
+      - 'projects/zaid-store-microservices/**'
+      - '.github/workflows/microservices.yml'
+  push:
+    branches: [codex/zaid-store-microservices]
+
+jobs:
+  compose-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/zaid-store-microservices
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate Kubernetes YAML
+        run: |
+          ruby -e 'require "yaml"; Dir.glob("k8s/*.yaml").sort.each { |f| YAML.load_file(f); puts "valid YAML #{f}" }'
+      - run: docker compose config --quiet
+      - run: docker compose up -d --build
+      - name: Wait for orders API
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://localhost:4102/health/ready; then exit 0; fi
+            sleep 2
+          done
+          docker compose logs
+          exit 1
+      - run: node scripts/smoke.js
+      - if: always()
+        run: docker compose down -v

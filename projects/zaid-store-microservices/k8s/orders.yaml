@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders
+  namespace: zaid-store
+spec:
+  # This demo stores orders in process memory; keep one replica until durable storage is configured.
+  replicas: 1
+  selector: { matchLabels: { app: orders } }
+  template:
+    metadata: { labels: { app: orders } }
+    spec:
+      securityContext: { runAsNonRoot: true, runAsUser: 1000, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: orders
+          image: zaid-orders:latest
+          imagePullPolicy: IfNotPresent
+          env: [{ name: PORT, value: "4102" }, { name: CATALOG_URL, value: "http://catalog:4101" }]
+          ports: [{ name: http, containerPort: 4102 }]
+          readinessProbe: { httpGet: { path: /health/ready, port: http }, initialDelaySeconds: 3, periodSeconds: 5 }
+          livenessProbe: { httpGet: { path: /health/live, port: http }, initialDelaySeconds: 10, periodSeconds: 10 }
+          resources: { requests: { cpu: 50m, memory: 64Mi }, limits: { cpu: 250m, memory: 128Mi } }
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: ["ALL"] } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: orders, namespace: zaid-store }
+spec:
+  type: NodePort
+  selector: { app: orders }
+  ports: [{ name: http, port: 4102, targetPort: http, nodePort: 30102 }]
